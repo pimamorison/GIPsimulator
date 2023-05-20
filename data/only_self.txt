@@ -1,0 +1,13 @@
+only self cif, sim length of 1000
+
+agents:  2 frequency:  0.4375
+agents:  3 frequency:  0.755859375
+agents:  4 frequency:  0.91
+agents:  5 frequency:  0.958
+agents:  6 frequency:  0.985
+agents:  7 frequency:  0.995
+agents:  8 frequency:  0.995
+agents:  9 frequency:  0.999
+agents:  10 frequency:  1.0
+agents:  11 frequency:  0.999
+agents:  12 frequency:  1.0

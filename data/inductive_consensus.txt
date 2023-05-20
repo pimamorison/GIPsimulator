@@ -1,0 +1,10 @@
+sim length: 1000
+
+agents:  2 frequency:  0.0
+agents:  3 frequency:  0.01171875
+agents:  4 frequency:  0.02
+agents:  5 frequency:  0.021
+agents:  6 frequency:  0.026
+agents:  7 frequency:  0.016
+agents:  8 frequency:  0.009
+agents:  9 frequency:  0.003
