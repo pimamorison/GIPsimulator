@@ -12,19 +12,45 @@ def prefers_outcome(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
     """
     Function that computes if outcome a is preferred to outcome b according
     to the Separability preference relation defined by Cho and Saporiti. If this
-    function returns true, a is preferred to b. If it returns false, then either
-    b is preferred to a or a and b are not comparable.
+    function returns true, a is preferred to b, or if a and b are not
+    comparable. If it returns false, then b is preferred to a.
     """
     if np.array_equal(a, b):
         return False
+    a_better = False
+    b_better = False
     for i in range(len(honest_opinion)):
         if a[i] != b[i]:
             if a[i] == honest_opinion[i] and b[i] != honest_opinion[i]:
-                pass
+                a_better = True
             else:
-                return False
+                b_better = True
+        if a_better and b_better:
+            return True
 
+    if b_better and not a_better:
+        return False
     return True
+
+
+def prefers_hamming(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    if np.array_equal(a, b):
+        return False
+    dist_a = np.count_nonzero(a != honest_opinion)
+    dist_b = np.count_nonzero(b != honest_opinion)
+    if dist_a <= dist_b:
+        return True
+    return False
+
+
+def prefers_intersection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    if np.array_equal(a, b):
+        return False
+    inter_a = np.sum(np.logical_and(a, b))
+    inter_b = np.sum(np.logical_and(a, b))
+    if inter_a >= inter_b:
+        return True
+    return False
 
 
 def only_self_cif(profile: np.ndarray):
@@ -101,7 +127,7 @@ def all_profiles(agents: int):
     # return np.array(list(itertools.combinations_with_replacement(all_opinions(agents), agents)))
 
 
-def manipulable_try_all(profile: np.ndarray, cif, verbose=False):
+def manipulable_try_all(profile: np.ndarray, cif, prefers_fun, verbose=False):
     """
     Function that looks at a profile and determines if it is manipulable by
     letting all agents try all possible opinions. If an agent is found
@@ -122,7 +148,7 @@ def manipulable_try_all(profile: np.ndarray, cif, verbose=False):
             new_profile[manip_agent] = new_opinion
             new_outcome = cif(new_profile)
 
-            if (prefers_outcome(new_outcome, original_outcome, honest_opinion)):
+            if (prefers_fun(new_outcome, original_outcome, honest_opinion)):
                 if verbose:
                     print("original profile: \n", profile)
                     print("new profile:\n", new_profile)
@@ -130,22 +156,21 @@ def manipulable_try_all(profile: np.ndarray, cif, verbose=False):
                     print("old outcome:", original_outcome)
                     print("honest opin:", honest_opinion)
                     print("Manip agent:", manip_agent)
-                    print(prefers_outcome(new_outcome,
-                                          original_outcome, honest_opinion), "\n")
+                    print(prefers_fun(new_outcome,
+                                      original_outcome, honest_opinion), "\n")
                 return True
         new_profile[manip_agent] = honest_opinion
 
     return False
 
 
-def manipulable_through_winners(profile: np.ndarray, cif, verbose=False):
+def manipulable_through_winners(profile: np.ndarray, cif, prefers_fun, verbose=False):
     """
     Function that looks at a profile and determines if it is manipulable by
     letting all agents try all possible opinions. If an agent is found
     that can manipulate, return True. If all agents are tried without any
     manipulation, return False.
     """
-
     original_outcome = cif(profile)
     new_profile = np.copy(profile)
     # manip_agents = np.unique(profile, axis=0, return_index=True)[1]
@@ -161,7 +186,7 @@ def manipulable_through_winners(profile: np.ndarray, cif, verbose=False):
             np.put(new_profile[manip_agent], winners, changed_votes)
             new_outcome = cif(new_profile)
 
-            if (prefers_outcome(new_outcome, original_outcome, honest_opinion)):
+            if (prefers_fun(new_outcome, original_outcome, honest_opinion)):
                 if verbose:
                     print("original profile: \n", profile)
                     print("new profile:\n", new_profile)
@@ -169,15 +194,15 @@ def manipulable_through_winners(profile: np.ndarray, cif, verbose=False):
                     print("old outcome:", original_outcome)
                     print("honest opin:", honest_opinion)
                     print("Manip agent:", manip_agent)
-                    print(prefers_outcome(new_outcome,
-                                          original_outcome, honest_opinion), "\n")
+                    print(prefers_fun(new_outcome,
+                                      original_outcome, honest_opinion), "\n")
                 return True
         new_profile[manip_agent] = honest_opinion
 
     return False
 
 
-def manipulable_only_self(profile: np.ndarray, cif, verbose=False):
+def manipulable_only_self(profile: np.ndarray, cif, prefers_fun, verbose=False):
     """
     Function that looks at a profile and determines if it is manipulable by
     letting all agents try all possible opinions. If an agent is found
@@ -199,7 +224,7 @@ def manipulable_only_self(profile: np.ndarray, cif, verbose=False):
         new_profile[manip_agent] = new_opinion
         new_outcome = cif(new_profile)
 
-        if (prefers_outcome(new_outcome, original_outcome, honest_opinion)):
+        if (prefers_fun(new_outcome, original_outcome, honest_opinion)):
             if verbose:
                 print("original profile: \n", profile)
                 print("new profile:\n", new_profile)
@@ -207,8 +232,8 @@ def manipulable_only_self(profile: np.ndarray, cif, verbose=False):
                 print("old outcome:", original_outcome)
                 print("honest opin:", honest_opinion)
                 print("Manip agent:", manip_agent)
-                print(prefers_outcome(new_outcome,
-                                      original_outcome, honest_opinion), "\n")
+                print(prefers_fun(new_outcome,
+                                  original_outcome, honest_opinion), "\n")
             return True
         new_profile[manip_agent] = honest_opinion
 
