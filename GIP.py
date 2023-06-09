@@ -38,7 +38,7 @@ def prefers_hamming(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
         return False
     dist_a = np.count_nonzero(a != honest_opinion)
     dist_b = np.count_nonzero(b != honest_opinion)
-    if dist_a <= dist_b:
+    if dist_a < dist_b:
         return True
     return False
 
@@ -46,9 +46,19 @@ def prefers_hamming(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
 def prefers_intersection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
     if np.array_equal(a, b):
         return False
-    inter_a = np.sum(np.logical_and(a, b))
-    inter_b = np.sum(np.logical_and(a, b))
-    if inter_a >= inter_b:
+    inter_a = np.sum(np.logical_and(a, honest_opinion))
+    inter_b = np.sum(np.logical_and(b, honest_opinion))
+    if inter_a > inter_b:
+        return True
+    return False
+
+
+def prefers_inversection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    if np.array_equal(a, b):
+        return False
+    inter_a = np.sum(np.logical_not(np.logical_or(a, honest_opinion)))
+    inter_b = np.sum(np.logical_not(np.logical_or(b, honest_opinion)))
+    if inter_a > inter_b:
         return True
     return False
 
@@ -88,14 +98,16 @@ def most_popular_cif(profile: np.ndarray):
     return result
 
 
-def k_most_popular_cif(profile: np.ndarray):
+def k_most_popular_cif(profile: np.ndarray, k):
     """
     Computes social decision. Output is a list of 0s and 1s
     where the element at index i is 1 if agent i is selected.
     """
     profile = profile.sum(axis=0)
-    k = math.ceil(len(profile) / 5)
-    k_highest_votes = np.partition(profile, -k)[-2]
+    k_highest_votes = np.partition(profile, -k)[-k]
+    # print(profile)
+    # print(np.partition(profile, -k))
+    # print(k_highest_votes, "\n\n\n")
     result = (profile >= k_highest_votes).astype(int)
     return result
 
@@ -160,7 +172,6 @@ def manipulable_try_all(profile: np.ndarray, cif, prefers_fun, verbose=False):
                                       original_outcome, honest_opinion), "\n")
                 return True
         new_profile[manip_agent] = honest_opinion
-
     return False
 
 
