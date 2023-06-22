@@ -30,11 +30,11 @@ def main():
                         inductive_consensus_cif: manipulable_try_all,
                         only_self_cif: manipulable_only_self}
     max_agents = 30
-    sim_length = 1000
-    prefers_fun = prefers_intersection
+    sim_length = 10000
+    prefers_fun = separable_strict
     # Number of agents for which to check all possible profiles
-    max_check_all = 0
-    cif = inductive_consensus_cif
+    max_check_all = 4
+    cif = only_self_cif
     # Generate random profile
     rng = np.random.default_rng()
 
@@ -47,7 +47,7 @@ def main():
               manipulable_count / 2 ** (agents ** 2))
         result_dict[agents] = manipulable_count / 2 ** (agents ** 2)
 
-    for agents in range(10, max_agents + 1):
+    for agents in range(max_check_all + 1, max_agents + 1):
         manipulable_count = 0
 
         for i in range(sim_length):
