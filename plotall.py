@@ -8,7 +8,7 @@ def only_self_formula(x: float):
 
 
 dir = "sp_weak/"
-cif = "inductive_consensus"
+cif = "most_popular"
 
 
 # with open('data/' + cif + '.json') as json_file:
@@ -54,7 +54,7 @@ plt.plot(x4, y4,
 #          label=r'$1 -\frac{(2^{n-1}+1)^n}{2^{n^2}}$')
 
 
-plt.title("Frequency of manipulation for the IC rule")
+plt.title("Frequency of manipulation for the MPA rule")
 # plt.ylim(ymin=0)
 plt.legend()
 plt.show()
