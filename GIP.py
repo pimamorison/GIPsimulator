@@ -1,3 +1,12 @@
+"""
+GIP.py
+- student: Pim Amorison
+- University of Amsterdam
+File that contains a multitude of functions for simulating
+group identification problems.
+"""
+
+
 import numpy as np
 import itertools
 import math
@@ -33,7 +42,27 @@ def prefers_outcome(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
     return True
 
 
+def separable_strict(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    """
+    Function that computes if outcome a is preferred to outcome b according
+    to the Separability preference relation defined by Cho and Saporiti. If this
+    function returns true, a is strictly preferred to b.
+    """
+    if np.array_equal(a, b):
+        return False
+    for i in range(len(honest_opinion)):
+        if a[i] != b[i] and a[i] != honest_opinion[i]:
+            return False
+
+    return True
+
+
 def prefers_hamming(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    """
+    Function that computes if outcome a is preferred to outcome b according
+    to the Hamming preference relation. If this
+    function returns true, a is strictly preferred to b.
+    """
     if np.array_equal(a, b):
         return False
     dist_a = np.count_nonzero(a != honest_opinion)
@@ -44,6 +73,11 @@ def prefers_hamming(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
 
 
 def prefers_intersection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    """
+    Function that computes if outcome a is preferred to outcome b according
+    to the positive intersection preference relation. If this
+    function returns true, a is strictly preferred to b.
+    """
     if np.array_equal(a, b):
         return False
     inter_a = np.sum(np.logical_and(a, honest_opinion))
@@ -53,7 +87,12 @@ def prefers_intersection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarra
     return False
 
 
-def prefers_inversection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+def prefers_neg_intersection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarray):
+    """
+    Function that computes if outcome a is preferred to outcome b according
+    to the negative intersection preference relation. If this
+    function returns true, a is strictly preferred to b.
+    """
     if np.array_equal(a, b):
         return False
     inter_a = np.sum(np.logical_not(np.logical_or(a, honest_opinion)))
@@ -63,7 +102,11 @@ def prefers_inversection(a: np.ndarray, b: np.ndarray, honest_opinion: np.ndarra
     return False
 
 
-def only_self_cif(profile: np.ndarray):
+def egocentric_cif(profile: np.ndarray):
+    """
+    Computes the outcome for the egocentric
+    cif given an NxN matrix profile.
+    """
     result = np.zeros(len(profile[0]))
     for i, opinion in enumerate(profile):
         if sum(opinion) == 1 and opinion[i] == 1:
@@ -72,6 +115,10 @@ def only_self_cif(profile: np.ndarray):
 
 
 def inductive_consensus_cif(profile: np.ndarray):
+    """
+    Computes the outcome for the inductive consensus
+    cif given an NxN matrix profile.
+    """
     profile_sum = profile.sum(axis=0)
     new_agents = (profile_sum == len(profile_sum)).astype(int)
     result = new_agents
@@ -93,6 +140,10 @@ def inductive_consensus_cif(profile: np.ndarray):
 
 
 def most_popular_cif(profile: np.ndarray):
+    """
+    Computes the outcome for the MPA
+    cif given an NxN matrix profile.
+    """
     profile = profile.sum(axis=0)
     result = (profile == profile.max()).astype(int)
     return result

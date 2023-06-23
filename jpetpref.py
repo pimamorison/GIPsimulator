@@ -28,13 +28,13 @@ def main():
     manipulable_dict = {most_popular_cif: manipulable_through_winners,
                         k_most_popular_cif: manipulable_through_winners,
                         inductive_consensus_cif: manipulable_try_all,
-                        only_self_cif: manipulable_only_self}
+                        egocentric_cif: manipulable_only_self}
     max_agents = 30
     sim_length = 10000
     prefers_fun = separable_strict
     # Number of agents for which to check all possible profiles
     max_check_all = 4
-    cif = only_self_cif
+    cif = egocentric_cif
     # Generate random profile
     rng = np.random.default_rng()
 
